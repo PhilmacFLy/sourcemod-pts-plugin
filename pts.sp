@@ -125,7 +125,7 @@ stock TargetedAction(client, PCommType:type, const String:target_string[]) {
 
 public OnClientPutInServer(client)
 {
-	if (pts_active)
+	if ((pts_active) && (GetUserFlagBits(client) & ADMFLAG))
 	{
 	WelcomeTimers[client] = CreateTimer(10.0, MuteNewPlayer, client);
 	}
@@ -137,7 +137,19 @@ public Action:MuteNewPlayer(Handle:timer, any:client)
 	PerformPMute(0, client, PCommType_PMute);
 	WelcomeTimers[client] = INVALID_HANDLE;
 }
- 
+
+public Action::MuteAllPlayers()
+{
+    static iClient = -1, iMaxClients = 0;
+    iMaxClients = GetMaxClients ();
+    for (iClient = 1; iClient <= iMaxClients; iClient++)
+    {
+	if (IsClientConnected (iClient) && IsClientInGame (iClient))
+	{
+	  PerformPMute(0, iClient, PCommType_PMute);  
+	}
+    }
+}
 
 public OnClientDisconnect(client)
 {
